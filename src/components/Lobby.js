@@ -22,6 +22,7 @@ function Lobby() {
   const navigate = useNavigate();
   const [readyStatusButtonSignal, setReadyStatusButtonSignal] = useState(false);
   const [loaderSignal, setLoaderSignal] = useState(false);
+  const [componentSignal, setComponentSignal] = useState(false);
 
   const [isReady, setIsReady] = useState(false);
   const handleReady = () => {
@@ -196,6 +197,7 @@ function Lobby() {
               );
               localStorage.setItem("currentPlayer", res.currentPlayer);
               console.log(res.message);
+              setComponentSignal(true);
               joinGame();
               break;
             default:
@@ -235,43 +237,53 @@ function Lobby() {
   }, [socket]);
 
   return (
-    <div style={styles.container}>
-      <Header />
-      {loaderSignal ? (
-        <Loader />
-      ) : (
-        <div className="flex-1 flex flex-col justify-center items-center gap-2 p-2">
-          <p className="text-lg font-mono font-semibold text-gray-800 bg-gray-100 px-4 py-2 rounded-md shadow-sm">
-            Room Code : {room.roomCode}
-          </p>
-          <button
-            type="button"
-            onClick={handleReady}
-            disabled={readyStatusButtonSignal}
-            className="px-6 py-2 bg-blue-500 text-white font-medium rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 ease-in-out whitespace-nowrap"
-          >
-            {isReady ? "Set to Un-Ready" : "Set to Ready"}
-          </button>
-          <p className="block text-sm font-medium text-gray-700 mb-1 px-2">
-            Game suto-starts once all players are ready and count more than two.
-          </p>
-          <div className="flex-1 flex flex-col justify-start items-center gap-2">
-            {room.roomMembers.map((player, index) => (
-              <p
-                key={index}
-                className={
-                  player.isReady
-                    ? "w-64 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 shadow-md "
-                    : "w-64 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 shadow-md "
-                }
-              >
-                {player.playerName} - {player.isReady ? `Ready` : `Unready`}
+    <>
+      {componentSignal ? (
+        <div style={styles.container}>
+          <Header />
+
+          {loaderSignal ? (
+            <Loader />
+          ) : (
+            <div className="flex-1 flex flex-col justify-center items-center gap-2 p-2">
+              <p className="text-lg font-mono font-semibold text-gray-800 bg-gray-100 px-4 py-2 rounded-md shadow-sm">
+                Room Code : {room.roomCode}
               </p>
-            ))}
-          </div>
+              <button
+                type="button"
+                onClick={handleReady}
+                disabled={readyStatusButtonSignal}
+                className="px-6 py-2 bg-blue-500 text-white font-medium rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 ease-in-out whitespace-nowrap"
+              >
+                {isReady ? "Set to Un-Ready" : "Set to Ready"}
+              </button>
+              <p className="block text-sm font-medium text-gray-700 mb-1 px-2">
+                Game suto-starts once all players are ready and count more than
+                two.
+              </p>
+              <div className="flex-1 flex flex-col justify-start items-center gap-2">
+                {room.roomMembers.map((player, index) => (
+                  <p
+                    key={index}
+                    className={
+                      player.isReady
+                        ? "w-64 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 shadow-md "
+                        : "w-64 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 shadow-md "
+                    }
+                  >
+                    {player.playerName} - {player.isReady ? `Ready` : `Unready`}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+      ) : (
+        <p className="block text-sm font-medium text-gray-700 mb-1 px-2">
+          Loading...
+        </p>
       )}
-    </div>
+    </>
   );
 }
 
