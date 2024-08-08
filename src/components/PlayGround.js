@@ -67,7 +67,6 @@ function PlayGround() {
             } else {
               setCardsCountRequired(room.cardsCount + 1);
             }
-            console.log(game.playerCards);
             setProcessedCardsList(sortCardsByName([...game.playerCards]));
             setIsChance(game.isChance);
             setCurrentChance(res.currentChance);
@@ -234,9 +233,6 @@ function PlayGround() {
     }
   }, []);
 
-  console.log(room);
-  console.log(processedCardsList);
-  console.log(currentSelectedCard);
   function sortCardsByName(cardsArray) {
     return cardsArray.sort((a, b) => {
       if (a.cardName < b.cardName) {

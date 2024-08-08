@@ -56,7 +56,6 @@ function GameResults() {
           case 200:
             console.log(res.message);
             var completeGame = res.completeGame;
-            console.log(completeGame);
             var otherPlayers = [];
             for (var i = 0; i < completeGame.sets.length; i++) {
               let l = [];
@@ -88,9 +87,6 @@ function GameResults() {
     });
   }, []);
 
-  console.log(completeGame);
-  console.log(gameWinner);
-  console.log(otherPlayersList);
   return (
     <div style={styles.container} className="flex-1">
       <Header />

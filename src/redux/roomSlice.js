@@ -37,7 +37,6 @@ const roomSlice = createSlice({
       state.isGameStart = action.payload;
     },
     setGame: (state, action) => {
-      console.log(action.payload);
       state.game = { ...action.payload };
     },
   },

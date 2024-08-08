@@ -20,7 +20,6 @@ function Lobby() {
   const navigate = useNavigate();
 
   const [isReady, setIsReady] = useState(false);
-  console.log(room);
   const handleReady = () => {
     let signal = isReady;
     setIsReady((state) => !state);
@@ -49,7 +48,6 @@ function Lobby() {
       }),
     }).then((res) => {
       let status = res.status;
-      console.log(room, "Before");
       res.json().then((res) => {
         if (status === 200) {
           let room = res.room;
@@ -89,7 +87,6 @@ function Lobby() {
       scoreBoard: JSON.parse(localStorage.getItem("scoreBoard")),
       currentPlayer: localStorage.getItem("currentPlayer"),
     };
-    console.log("join roon here");
     socket.emit("join_room", {
       roomCode: localRoom.roomCode,
       playerName: localRoom.currentPlayer,
@@ -201,12 +198,9 @@ function Lobby() {
     }
   }, []);
 
-  console.log(room);
-
   useEffect(() => {
     socket.on("room_update", (data) => {
       let room = data.room;
-      console.log("Player Join here");
       dispatch(setCardsCount(room.cardsCount));
       dispatch(setRoomCode(room.roomCode));
       dispatch(setRoomMembers(room.roomMembers));
