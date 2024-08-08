@@ -39,7 +39,6 @@ function PlayerDetails() {
       scoreBoard: JSON.parse(localStorage.getItem("scoreBoard")),
       currentPlayer: localStorage.getItem("currentPlayer"),
     };
-    console.log(localRoom);
     if (!localRoom.roomCode) {
       gotoHome();
     } else {
@@ -68,7 +67,6 @@ function PlayerDetails() {
               localStorage.setItem("roomMembers", JSON.stringify([]));
               localStorage.setItem("sets", JSON.stringify([]));
               localStorage.setItem("scoreBoard", JSON.stringify([]));
-              console.log(res.message);
               gotoHome();
               break;
             case 411:

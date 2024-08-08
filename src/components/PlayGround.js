@@ -247,17 +247,14 @@ function PlayGround() {
 
   useEffect(() => {
     socket.on("send_to_next_player_response", (data) => {
-      console.log("send to next player reponse invoke");
       loadGameData();
     });
 
     socket.on("join_play_ground_response", (data) => {
-      console.log("load game data play gorund reponse ");
       loadGameData();
     });
 
     socket.on("send_and_declare_show_response", (data) => {
-      console.log(" send_and_declare_show_response invokes");
       getCompleteGame();
     });
   }, [socket]);
@@ -268,7 +265,6 @@ function PlayGround() {
   };
 
   const sendToNextplayer = () => {
-    console.log("sendto next player invoked");
     socket.emit("send_to_next_player", {
       roomCode: room.roomCode,
       card: currentSelectedCard,
@@ -281,7 +277,6 @@ function PlayGround() {
   };
 
   const declareShow = () => {
-    console.log("hello declare show invoked");
     let localRoom = {
       roomCode: localStorage.getItem("roomCode"),
       cardsCount: Number(localStorage.getItem("cardsCount")),

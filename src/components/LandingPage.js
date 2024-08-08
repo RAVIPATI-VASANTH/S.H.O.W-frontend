@@ -26,10 +26,8 @@ const LandingPage = () => {
     }).then((res) => {
       let status = res.status;
       res.json().then((res) => {
-        console.log(status);
         if (status === 200) {
           let room = res.room;
-          console.log(room);
           dispatch(setCardsCount(room.cardsCount));
           dispatch(setRoomCode(room.roomCode));
           dispatch(setRoomMembers(room.roomMembers));
