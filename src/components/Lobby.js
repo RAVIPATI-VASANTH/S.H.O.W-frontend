@@ -241,7 +241,6 @@ function Lobby() {
       {componentSignal ? (
         <div style={styles.container}>
           <Header />
-
           {loaderSignal ? (
             <Loader />
           ) : (

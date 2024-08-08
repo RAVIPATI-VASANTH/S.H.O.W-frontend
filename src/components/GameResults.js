@@ -14,6 +14,7 @@ function GameResults() {
     playerName: "",
   });
   const [otherPlayersList, setOtherPlayersList] = useState([]);
+  const [componentSignal, setComponentSignal] = useState(false);
 
   const handleNewGame = () => {
     let gotoLobby = () => navigate("/lobby");
@@ -79,6 +80,7 @@ function GameResults() {
             }
             setOtherPlayersList(otherPlayers);
             setCompleteGame(res.completeGame);
+            setCompleteGame(true);
             break;
           default:
             console.log(res.message);
@@ -88,49 +90,57 @@ function GameResults() {
   }, []);
 
   return (
-    <div style={styles.container} className="flex-1">
-      <Header />
-      <div className="flex flex-col gap-2 p-2 items-center justify-center">
-        <div className="flex flex-col">
-          <p className="w-64 font-semibold bg-green-200 border-l-4 border-r-4 border-green-500 text-green-700 p-4">
-            Winner
-          </p>
-          <div>
-            <p className="text-lg text-white font-mono font-semibold bg-green-500 px-4 py-2 rounded-md shadow-sm my-1">
-              {gameWinner.playerName}
-            </p>
-            {gameWinner.playerCards.map((card) => (
-              <p className="text-lg font-mono font-semibold text-gray-800 bg-gray-100 px-4 py-2 rounded-md shadow-sm mb-1 border-l-2 border-r-2 border-t-2 border-b-2 border-green-700">
-                {card.cardName}
+    <>
+      {componentSignal ? (
+        <div style={styles.container} className="flex-1">
+          <Header />
+          <div className="flex flex-col gap-2 p-2 items-center justify-center">
+            <div className="flex flex-col">
+              <p className="w-64 font-semibold bg-green-200 border-l-4 border-r-4 border-green-500 text-green-700 p-4">
+                Winner
               </p>
-            ))}
-          </div>
-        </div>
-        <div>
-          <p className="w-64 font-semibold bg-yellow-200 border-l-4 border-r-4 border-yellow-500 text-yellow-700 p-4">
-            Other Players
-          </p>
-          {otherPlayersList.map((player) => (
-            <div>
-              <p className="text-lg text-white font-mono font-semibold bg-yellow-500 px-4 py-2 rounded-md shadow-sm my-1">
-                {player.playerName}
-              </p>
-              {player.playerCards.map((card) => (
-                <p className="text-lg font-mono font-semibold text-gray-800 bg-gray-100 px-4 py-2 rounded-md shadow-sm mb-1 border-l-2 border-r-2 border-t-2 border-b-2 border-yellow-700">
-                  {card.cardName}
+              <div>
+                <p className="text-lg text-white font-mono font-semibold bg-green-500 px-4 py-2 rounded-md shadow-sm my-1">
+                  {gameWinner.playerName}
                 </p>
+                {gameWinner.playerCards.map((card) => (
+                  <p className="text-lg font-mono font-semibold text-gray-800 bg-gray-100 px-4 py-2 rounded-md shadow-sm mb-1 border-l-2 border-r-2 border-t-2 border-b-2 border-green-700">
+                    {card.cardName}
+                  </p>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="w-64 font-semibold bg-yellow-200 border-l-4 border-r-4 border-yellow-500 text-yellow-700 p-4">
+                Other Players
+              </p>
+              {otherPlayersList.map((player) => (
+                <div>
+                  <p className="text-lg text-white font-mono font-semibold bg-yellow-500 px-4 py-2 rounded-md shadow-sm my-1">
+                    {player.playerName}
+                  </p>
+                  {player.playerCards.map((card) => (
+                    <p className="text-lg font-mono font-semibold text-gray-800 bg-gray-100 px-4 py-2 rounded-md shadow-sm mb-1 border-l-2 border-r-2 border-t-2 border-b-2 border-yellow-700">
+                      {card.cardName}
+                    </p>
+                  ))}
+                </div>
               ))}
             </div>
-          ))}
+            <button
+              className=" fixed bottom-4 right-4 px-6 py-2 bg-blue-500 text-white font-medium rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 ease-in-out whitespace-nowrap"
+              onClick={handleNewGame}
+            >
+              New game
+            </button>
+          </div>
         </div>
-        <button
-          className=" fixed bottom-4 right-4 px-6 py-2 bg-blue-500 text-white font-medium rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 ease-in-out whitespace-nowrap"
-          onClick={handleNewGame}
-        >
-          New game
-        </button>
-      </div>
-    </div>
+      ) : (
+        <p className="block text-sm font-medium text-gray-700 mb-1 px-2">
+          Loading...
+        </p>
+      )}
+    </>
   );
 }
 
