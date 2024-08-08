@@ -14,9 +14,13 @@ module.exports = {
           "0%, 100%": { transform: "translateX(100%)", opacity: 0 },
           "10%, 90%": { transform: "translateX(0)", opacity: 1 },
         },
+        spin: {
+          to: { transform: "rotate(360deg)" },
+        },
       },
       animation: {
         "slide-in-out": "slideInOut 5s ease-in-out forwards",
+        spin: "spin 3s linear infinite",
       },
     },
   },

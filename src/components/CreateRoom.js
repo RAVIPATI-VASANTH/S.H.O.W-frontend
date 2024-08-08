@@ -9,14 +9,20 @@ import {
   setScoreBoard,
   setSets,
 } from "../redux/roomSlice";
+import Loader from "./Loader.js";
+
 import Header from "./Header";
 function CreateRoom() {
   const [count, setCount] = useState(4);
   const [responseMessage, setResponseMessage] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [createRoomButtonSignal, setCreateRoomButtonSignal] = useState(false);
+  const [loaderSignal, setLoaderSignal] = useState(false);
 
   const handleCreateRoom = () => {
+    setCreateRoomButtonSignal(true);
+    setLoaderSignal(true);
     fetch(`${constants.backendUrl}/create-room`, {
       method: "POST",
       headers: {
@@ -27,8 +33,8 @@ function CreateRoom() {
       let status = res.status;
       res.json().then((res) => {
         if (status === 200) {
+          setLoaderSignal(true);
           let room = res.room;
-          console.log(room);
           dispatch(setCardsCount(room.cardsCount));
           dispatch(setRoomCode(room.roomCode));
           dispatch(setRoomMembers(room.roomMembers));
@@ -42,6 +48,7 @@ function CreateRoom() {
           let gotoPlayerDetails = () => navigate("/player-details");
           gotoPlayerDetails();
         } else {
+          setCreateRoomButtonSignal(false);
           setResponseMessage(res.message);
         }
       });
@@ -51,32 +58,37 @@ function CreateRoom() {
   return (
     <div style={styles.container}>
       <Header />
-      <div className="flex-1 flex flex-col justify-center items-center gap-2">
-        <p className="text-lg">How many cards are in a set?</p>
-        <div className="flex justify-center items-center gap-2 p-3">
-          <input
-            type="number"
-            value={count}
-            className="w-full max-w-md sm:max-w-xs px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            onChange={(event) => {
-              setCount(Number(event.target.value));
-            }}
-          />
-          <button
-            className="px-6 py-2 bg-blue-500 text-white font-medium rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 ease-in-out whitespace-nowrap"
-            onClick={handleCreateRoom}
-          >
-            Create
-          </button>
+      {loaderSignal ? (
+        <Loader />
+      ) : (
+        <div className="flex-1 flex flex-col justify-center items-center gap-2">
+          <p className="text-lg">How many cards are in a set?</p>
+          <div className="flex justify-center items-center gap-2 p-3">
+            <input
+              type="number"
+              value={count}
+              className="w-full max-w-md sm:max-w-xs px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              onChange={(event) => {
+                setCount(Number(event.target.value));
+              }}
+            />
+            <button
+              className="px-6 py-2 bg-blue-500 text-white font-medium rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 ease-in-out whitespace-nowrap"
+              onClick={handleCreateRoom}
+              disabled={createRoomButtonSignal}
+            >
+              Create
+            </button>
+          </div>
+          {responseMessage ? (
+            <p className="fixed bottom-4 right-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md shadow-lg animate-slide-in-out">
+              {responseMessage}
+            </p>
+          ) : (
+            <></>
+          )}
         </div>
-        {responseMessage ? (
-          <p className="fixed bottom-4 right-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md shadow-lg animate-slide-in-out">
-            {responseMessage}
-          </p>
-        ) : (
-          <></>
-        )}
-      </div>
+      )}
     </div>
   );
 }

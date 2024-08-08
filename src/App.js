@@ -8,6 +8,7 @@ import PlayerDetails from "./components/PlayerDetails.js";
 import Lobby from "./components/Lobby.js";
 import PlayGround from "./components/PlayGround.js";
 import GameResults from "./components/GameResults.js";
+import Loader from "./components/Loader.js";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/lobby" element={<Lobby />} />
             <Route path="/play-ground" element={<PlayGround />} />
             <Route path="/game-results" element={<GameResults />} />
+            <Route path="/loader" element={<Loader />} />
           </Routes>
         </div>
       </Router>

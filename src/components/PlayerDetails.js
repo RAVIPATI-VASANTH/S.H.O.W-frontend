@@ -11,6 +11,7 @@ import {
   setSets,
 } from "../redux/roomSlice";
 import Header from "./Header";
+import Loader from "./Loader.js";
 
 function PlayerDetails() {
   const dispatch = useDispatch();
@@ -18,6 +19,8 @@ function PlayerDetails() {
   const room = useSelector((state) => state.room);
   const [playerName, setPlayerName] = useState("");
   const [response, setResponse] = useState("");
+  const [joinRoomGameButtonSignal, setJoinRoomGameButtonSignal] =
+    useState(false);
   const [playerCardsSet, setPlayerCardsSet] = useState(() => {
     let l = [];
     for (var i = 0; i < room.cardsCount; i++) {
@@ -25,6 +28,8 @@ function PlayerDetails() {
     }
     return l;
   });
+  const [loaderSignal, setLoaderSignal] = useState(false);
+
   const [isTouched, setIsTouched] = useState(false);
 
   useEffect(() => {
@@ -139,8 +144,10 @@ function PlayerDetails() {
   };
 
   const joinGame = () => {
+    setJoinRoomGameButtonSignal(true);
     let gotoHome = () => navigate("/");
     let gotoLobby = () => navigate("/lobby");
+    setLoaderSignal(true);
     fetch(`${constants.backendUrl}/join-game`, {
       method: "POST",
       headers: {
@@ -153,6 +160,7 @@ function PlayerDetails() {
       }),
     }).then((res) => {
       let status = res.status;
+      setLoaderSignal(false);
       res.json().then((res) => {
         let room = res.room;
         switch (status) {
@@ -194,6 +202,7 @@ function PlayerDetails() {
               setResponse("");
             }, 3000);
             console.log(res.message);
+            setJoinRoomGameButtonSignal(false);
             break;
           default:
             console.log(res.message);
@@ -205,48 +214,53 @@ function PlayerDetails() {
   return (
     <div style={styles.container}>
       <Header />
-      <div className="flex-1 flex flex-col justify-center items-center gap-2">
-        <label className="flex flex-col justify-center items-start">
-          <span className="block text-sm font-medium text-gray-700 mb-1">
-            Player Name
-          </span>
-          <input
-            className="w-full max-w-md sm:max-w-xs px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            value={playerName}
-            maxLength={10}
-            onChange={handlePlayerName}
-          />
-        </label>
-        <label className="flex flex-col gap-1">
-          <span className="block text-sm font-medium text-gray-700 mb-1">
-            Cards List
-          </span>
-          {playerCardsSet.map((card, index) => (
+      {loaderSignal ? (
+        <Loader></Loader>
+      ) : (
+        <div className="flex-1 flex flex-col justify-center items-center gap-2">
+          <label className="flex flex-col justify-center items-start">
+            <span className="block text-sm font-medium text-gray-700 mb-1">
+              Player Name
+            </span>
             <input
-              value={card}
               className="w-full max-w-md sm:max-w-xs px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              key={index}
-              maxLength={25}
-              onChange={(event) => {
-                handleCardName(event, index);
-              }}
-            ></input>
-          ))}
-        </label>
-        <button
-          className="px-6 py-2 bg-green-500 text-white font-medium rounded-md shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-200 ease-in-out whitespace-nowrap"
-          onClick={joinGame}
-        >
-          Join Game
-        </button>
-        {response ? (
-          <p className="fixed bottom-4 right-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md shadow-lg animate-slide-in-out">
-            {response}
-          </p>
-        ) : (
-          <></>
-        )}
-      </div>
+              value={playerName}
+              maxLength={10}
+              onChange={handlePlayerName}
+            />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="block text-sm font-medium text-gray-700 mb-1">
+              Cards List
+            </span>
+            {playerCardsSet.map((card, index) => (
+              <input
+                value={card}
+                className="w-full max-w-md sm:max-w-xs px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                key={index}
+                maxLength={25}
+                onChange={(event) => {
+                  handleCardName(event, index);
+                }}
+              ></input>
+            ))}
+          </label>
+          <button
+            className="px-6 py-2 bg-green-500 text-white font-medium rounded-md shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-200 ease-in-out whitespace-nowrap"
+            onClick={joinGame}
+            disabled={joinRoomGameButtonSignal}
+          >
+            Join Game
+          </button>
+          {response ? (
+            <p className="fixed bottom-4 right-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md shadow-lg animate-slide-in-out">
+              {response}
+            </p>
+          ) : (
+            <></>
+          )}
+        </div>
+      )}
     </div>
   );
 }

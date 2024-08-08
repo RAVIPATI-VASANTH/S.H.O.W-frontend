@@ -12,15 +12,20 @@ import {
 import constants from "../constants.json";
 import io from "socket.io-client";
 import Header from "./Header";
+import Loader from "./Loader.js";
+
 const socket = io.connect(constants.backendUrl);
 
 function Lobby() {
   const room = useSelector((state) => state.room);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [readyStatusButtonSignal, setReadyStatusButtonSignal] = useState(false);
+  const [loaderSignal, setLoaderSignal] = useState(false);
 
   const [isReady, setIsReady] = useState(false);
   const handleReady = () => {
+    setReadyStatusButtonSignal(true);
     let signal = isReady;
     setIsReady((state) => !state);
     socket.emit("update_ready", {
@@ -37,6 +42,7 @@ function Lobby() {
       roomMembers.push(player);
     }
     dispatch(setRoomMembers(roomMembers));
+    setLoaderSignal(true);
     fetch(`${constants.backendUrl}/get-room-data`, {
       method: "POST",
       headers: {
@@ -48,7 +54,9 @@ function Lobby() {
       }),
     }).then((res) => {
       let status = res.status;
+      setLoaderSignal(false);
       res.json().then((res) => {
+        setReadyStatusButtonSignal(false);
         if (status === 200) {
           let room = res.room;
           dispatch(setCardsCount(room.cardsCount));
@@ -229,6 +237,40 @@ function Lobby() {
   return (
     <div style={styles.container}>
       <Header />
+      {loaderSignal ? (
+        <Loader />
+      ) : (
+        <div className="flex-1 flex flex-col justify-center items-center gap-2 p-2">
+          <p className="text-lg font-mono font-semibold text-gray-800 bg-gray-100 px-4 py-2 rounded-md shadow-sm">
+            Room Code : {room.roomCode}
+          </p>
+          <button
+            type="button"
+            onClick={handleReady}
+            disabled={readyStatusButtonSignal}
+            className="px-6 py-2 bg-blue-500 text-white font-medium rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 ease-in-out whitespace-nowrap"
+          >
+            {isReady ? "Set to Un-Ready" : "Set to Ready"}
+          </button>
+          <p className="block text-sm font-medium text-gray-700 mb-1 px-2">
+            Game suto-starts once all players are ready and count more than two.
+          </p>
+          <div className="flex-1 flex flex-col justify-start items-center gap-2">
+            {room.roomMembers.map((player, index) => (
+              <p
+                key={index}
+                className={
+                  player.isReady
+                    ? "w-64 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 shadow-md "
+                    : "w-64 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 shadow-md "
+                }
+              >
+                {player.playerName} - {player.isReady ? `Ready` : `Unready`}
+              </p>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="flex-1 flex flex-col justify-center items-center gap-2 p-2">
         <p className="text-lg font-mono font-semibold text-gray-800 bg-gray-100 px-4 py-2 rounded-md shadow-sm">
           Room Code : {room.roomCode}
@@ -236,6 +278,7 @@ function Lobby() {
         <button
           type="button"
           onClick={handleReady}
+          disabled={readyStatusButtonSignal}
           className="px-6 py-2 bg-blue-500 text-white font-medium rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 ease-in-out whitespace-nowrap"
         >
           {isReady ? "Set to Un-Ready" : "Set to Ready"}

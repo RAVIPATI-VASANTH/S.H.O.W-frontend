@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import constants from "../constants.json";
 import { useDispatch } from "react-redux";
-
+import Loader from "./Loader.js";
 import {
   setCardsCount,
   setRoomCode,
@@ -14,9 +14,13 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [responseMessage, setResponseMessage] = useState("");
+  const [loaderSignal, setLoaderSignal] = useState(false);
+  const [joinRoomButtonSignal, setJoinRoomButtonSignal] = useState(false);
 
   const [currentRoomCode, setCurrentRoomCode] = useState("");
   const handleJoinRoom = () => {
+    setJoinRoomButtonSignal(true);
+    setLoaderSignal(true);
     fetch(`${constants.backendUrl}/join-room`, {
       method: "POST",
       headers: {
@@ -25,6 +29,7 @@ const LandingPage = () => {
       body: JSON.stringify({ roomCode: currentRoomCode.toString().trim() }),
     }).then((res) => {
       let status = res.status;
+      setLoaderSignal(false);
       res.json().then((res) => {
         if (status === 200) {
           let room = res.room;
@@ -42,6 +47,7 @@ const LandingPage = () => {
           gotoPlayerDetails();
         } else {
           setResponseMessage(res.message);
+          setJoinRoomButtonSignal(false);
           setTimeout(() => {
             setResponseMessage("");
           }, 3000);
@@ -55,49 +61,54 @@ const LandingPage = () => {
       <h1 style={styles.heading} className="text-6xl font-bold">
         S.H.O.W
       </h1>
-      <div
-        style={styles.buttonContainer}
-        className="flex items-center justify-center"
-      >
-        <div className="flex justify-center items-center gap-2 min-w-screen px-2">
-          <input
-            type="text"
-            maxLength={4}
-            className="w-full max-w-md sm:max-w-xs px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            placeholder="Enter room code"
-            onChange={(event) => {
-              setCurrentRoomCode(event.target.value);
-            }}
-            value={currentRoomCode}
-            style={styles.input}
-          />
-          <button
-            className="px-6 py-2 bg-blue-500 text-white font-medium rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 ease-in-out whitespace-nowrap"
-            style={styles.button}
-            onClick={handleJoinRoom}
-          >
-            Join Room
-          </button>
+      {loaderSignal ? (
+        <Loader />
+      ) : (
+        <div
+          style={styles.buttonContainer}
+          className="flex items-center justify-center"
+        >
+          <div className="flex justify-center items-center gap-2 min-w-screen px-2">
+            <input
+              type="text"
+              maxLength={4}
+              className="w-full max-w-md sm:max-w-xs px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              placeholder="Enter room code"
+              onChange={(event) => {
+                setCurrentRoomCode(event.target.value);
+              }}
+              value={currentRoomCode}
+              style={styles.input}
+            />
+            <button
+              className="px-6 py-2 bg-blue-500 text-white font-medium rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 ease-in-out whitespace-nowrap"
+              style={styles.button}
+              onClick={handleJoinRoom}
+              disabled={joinRoomButtonSignal}
+            >
+              Join Room
+            </button>
+          </div>
+          <div className="flex justify-center items-center">
+            <button
+              style={styles.button}
+              onClick={() => {
+                navigate("/create-room");
+              }}
+              className="px-6 py-2 bg-green-500 text-white font-medium rounded-md shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-200 ease-in-out"
+            >
+              Create Room
+            </button>
+          </div>
+          {responseMessage ? (
+            <p className="fixed bottom-4 right-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md shadow-lg animate-slide-in-out">
+              {responseMessage}
+            </p>
+          ) : (
+            <></>
+          )}
         </div>
-        <div className="flex justify-center items-center">
-          <button
-            style={styles.button}
-            onClick={() => {
-              navigate("/create-room");
-            }}
-            className="px-6 py-2 bg-green-500 text-white font-medium rounded-md shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-200 ease-in-out"
-          >
-            Create Room
-          </button>
-        </div>
-        {responseMessage ? (
-          <p className="fixed bottom-4 right-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md shadow-lg animate-slide-in-out">
-            {responseMessage}
-          </p>
-        ) : (
-          <></>
-        )}
-      </div>
+      )}
     </div>
   );
 };
