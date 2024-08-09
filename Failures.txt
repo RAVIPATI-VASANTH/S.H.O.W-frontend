@@ -1,0 +1,21 @@
+disconnected and not joined player in the lobby
+
+// "backendUrl": "https://s-h-o-w-backend.onrender.com"
+ http://127.0.0.1:5000 
+1. CORS Error -> X solved it seems
+
+2. button disability when invoking a api -> X not sure in Play ground page 
+
+2.1 when a user is click send and declare when he is ready for show and other user with three same cards. then the code is declaring the three cards person instead of actual person who called send and declare -> X not solved, some times still getting sometimes
+
+3. need to write the validation of sendNextPlayer, where the nextPlayer should not get added extra card greater than this limit -> X
+
+4. it is getting unready after clicking ready in production immediately -> X
+
+5. In frontend api calls needs to be invoked after completion previous task only -> X
+ 
+6. Add loaders while api call is invoked  -> X not looking good
+
+7. make component display after only the UseEffect -> X i thinsk funcked up while displaying gameresults page
+
+8. Add some icons for buttons and illustrations where ever required
